@@ -1,0 +1,65 @@
+/* App.css */
+html, body {
+  height: 100%;
+  margin: 0;
+  background: #a7c8e4; /* Cool light blue background color */
+}
+
+.App {
+  display: flex;
+  flex-direction: column; /* Stack the form and table */
+  gap: 20px;
+  padding: 20px;
+  background: #a7c8e4;
+  min-height: 100vh;
+}
+
+.form {
+  flex: 1;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(145deg, #dbeafe, #a7c8e4); /* Smooth gradient for the form */
+}
+
+.table-container {
+  flex: 2;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(145deg, #dbeafe, #a7c8e4); /* Smooth gradient for the table */
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 10px;
+  border: 1px solid #dee2e6;
+}
+
+th {
+  background-color: #004d80;
+  color: white;
+}
+
+tr:nth-child(even) {
+  background-color: #e1f1fb;
+}
+
+tr:nth-child(odd) {
+  background-color: #d1e8f6;
+}
+
+button {
+  padding: 5px 10px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.8;
+}
