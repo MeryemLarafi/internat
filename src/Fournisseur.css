@@ -1,0 +1,323 @@
+/* Fournisseur.css */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.fournisseur-container {
+  background: #f8f9fa;
+  font-family: 'Poppins', sans-serif;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 100vh; /* Kept for full height, but content will stay at top */
+  margin-top: 0px;
+}
+
+.container {
+  margin-left: 90px;
+  width: calc(100% - 90px);
+  max-width: 1400px;
+  padding: 20px 20px 0; /* Reduced bottom padding to keep content at top */
+}
+
+.controls-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.search-container {
+  position: relative;
+  width: 240px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0 15px 0 35px;
+  border: 2px solid #2f3640;
+  border-radius: 6px;
+  font-size: 14px;
+  height: 36px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #2f3640;
+  font-size: 14px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.btn-edit {
+  background: #4a5568;
+  color: white;
+}
+
+.btn-delete {
+  background: #e53e3e;
+  color: white;
+  padding: 8px;
+}
+
+.btn-edit:hover {
+  background: #2d3748;
+}
+
+.btn-delete:hover {
+  background: #c53030;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.table th,
+.table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.table th {
+  background: #4a5568;
+  font-weight: 600;
+  color: white;
+}
+
+.table tr:hover {
+  background: #f8f9fa;
+}
+
+.contact-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #666;
+}
+
+.contact-info svg {
+  color: #4a5568;
+}
+
+/* Modal Styles */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.modal-content h2 {
+  margin-bottom: 20px;
+  color: #4a5568;
+  font-weight: 600;
+}
+
+.modal-content form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.modal-content form input {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.products-selection {
+  max-height: 200px;
+  overflow-y: auto;
+  margin: 10px 0;
+}
+
+.product-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 5px 0;
+}
+
+.modal-content form button {
+  padding: 10px;
+  border: none;
+  background: #4a5568;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+.modal-content form button:hover {
+  background: #2d3748;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #e53e3e;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Styles for products list */
+.products-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 100px;
+  overflow-y: auto;
+}
+
+.products-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 0;
+  font-size: 13px;
+}
+
+.remove-product-btn {
+  background: #e53e3e;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-left: 10px;
+  font-size: 12px;
+}
+
+.remove-product-btn:hover {
+  background: #c53030;
+}
+
+.table td {
+  vertical-align: top;
+}
+
+/* Styles for suppliers list modal */
+.suppliers-list-modal {
+  width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.suppliers-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.supplier-item {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.3s ease;
+}
+
+.supplier-item:hover {
+  background-color: #f8f9fa;
+}
+
+.supplier-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.supplier-name {
+  font-weight: 600;
+  color: #4a5568;
+  font-size: 16px;
+}
+
+.supplier-contact {
+  color: #666;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.supplier-contact:hover {
+  color: #4a5568;
+}
+
+.phone-icon {
+  margin-right: 8px;
+  color: #4a5568;
+}
+
+/* Style for icon-only buttons in the table */
+.icon-only {
+  background: none;
+  padding: 8px;
+  color: #4a5568;
+}
+
+.icon-only.btn-delete {
+  color: #e53e3e;
+}
+
+.icon-only:hover {
+  background: none;
+  color: #2d3748;
+}
+
+.icon-only.btn-delete:hover {
+  color: #c53030;
+}

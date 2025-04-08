@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { FaSearch } from "react-icons/fa";
+import { FaSearch, FaFilter } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import "./Cuisinier.css";
 
 function Cuisinier({ products }) {
-  const [search, setSearch] = useState(""); // Search filter by product name
-  const [selectedProduct, setSelectedProduct] = useState(null); // Selected product for quantity input
-  const [quantityToUse, setQuantityToUse] = useState(0); // Quantity input for reduction
-  const [usedProducts, setUsedProducts] = useState([]); // Track used products within Cuisinier only
-  const [selectedDate, setSelectedDate] = useState(null); // Date to filter by
+  const [search, setSearch] = useState("");
+  const [selectedZone, setSelectedZone] = useState("Tous");
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [quantityToUse, setQuantityToUse] = useState(0);
+  const [usedProducts, setUsedProducts] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
-  // Load usedProducts from localStorage on component mount
+  const zonesDisponibles = ["Tous", ...new Set(products.map(p => p.zone || "Non assigné"))];
+
   useEffect(() => {
     const storedUsedProducts = JSON.parse(localStorage.getItem("usedProducts"));
     if (storedUsedProducts) {
@@ -18,49 +22,42 @@ function Cuisinier({ products }) {
     }
   }, []);
 
-  // Save updated usedProducts to localStorage whenever it changes
   useEffect(() => {
     if (usedProducts.length > 0) {
       localStorage.setItem("usedProducts", JSON.stringify(usedProducts));
     }
   }, [usedProducts]);
 
-  // Filter products based on search input and selected date
   const filteredProducts = products.filter((product) => {
     const usedProduct = usedProducts.find((used) => used.id === product.id);
-    const availableQuantity = usedProduct
-      ? usedProduct.availableQuantity
-      : product.quantity;
+    const availableQuantity = usedProduct ? usedProduct.availableQuantity : product.quantity;
 
-    // Filter by product name and date
     const dateMatches =
       !selectedDate ||
       (usedProduct && usedProduct.datesUsed.includes(selectedDate.toLocaleDateString()));
 
+    const zoneMatch = selectedZone === "Tous" || (product.zone || "Non assigné") === selectedZone;
+
     return (
       availableQuantity >= 0 &&
       product.name.toLowerCase().startsWith(search.toLowerCase()) &&
-      dateMatches
+      dateMatches &&
+      zoneMatch
     );
   });
 
-  // Function to handle reducing quantity in the Cuisinier table only
   const handleQuantityDecrease = (productId) => {
     const selected = products.find((product) => product.id === productId);
     const usedProduct = usedProducts.find((used) => used.id === selected.id);
-    const availableQuantity = usedProduct
-      ? usedProduct.availableQuantity
-      : selected.quantity;
+    const availableQuantity = usedProduct ? usedProduct.availableQuantity : selected.quantity;
 
     if (quantityToUse <= 0 || quantityToUse > availableQuantity) {
-      alert(
-        "Quantité invalide. Veuillez entrer une quantité supérieure à zéro et inférieure ou égale à la quantité disponible."
-      );
+      alert("Quantité invalide.");
       setQuantityToUse(0);
       return;
     }
 
-    const currentDate = new Date().toLocaleDateString(); // Current date
+    const currentDate = new Date().toLocaleDateString();
 
     if (usedProduct) {
       const updatedUsedProducts = usedProducts.map((used) =>
@@ -77,6 +74,7 @@ function Cuisinier({ products }) {
     } else {
       const newUsedProduct = {
         ...selected,
+        zone: selected.zone || "Non assigné",
         usedQuantity: quantityToUse,
         availableQuantity: availableQuantity - quantityToUse,
         datesUsed: [currentDate],
@@ -88,175 +86,157 @@ function Cuisinier({ products }) {
     setSelectedProduct(null);
   };
 
-  // Helper function to get product status
   const getStatus = (product) => {
     const usedProduct = usedProducts.find((used) => used.id === product.id);
-    const remainingQuantity = usedProduct
-      ? usedProduct.availableQuantity
-      : product.quantity;
+    const remainingQuantity = usedProduct ? usedProduct.availableQuantity : product.quantity;
 
     if (remainingQuantity <= 0) {
-      return {
-        status: "🛑 La quantité est terminée",
-        bgColor: "#ffe6e6",
-        textColor: "#cc0000",
-      };
+      return { className: "status status-expire", text: "Expiré" };
     } else if (remainingQuantity <= 5) {
-      return {
-        status: "⚠️ La quantité est proche de la fin",
-        bgColor: "#fff8e5",
-        textColor: "#cc7a00",
-      };
+      return { className: "status status-proche", text: "Proche à Expirer" };
     } else {
-      return {
-        status: "✅ Valide",
-        bgColor: "#ffffff",
-        textColor: "#008000",
-      };
+      return { className: "status status-bon", text: "Bon" };
     }
   };
 
+  const getZoneTitle = () => {
+    switch (selectedZone) {
+      case "Economa 1":
+        return { text: "Zone Economa 1", icon: "fas fa-utensils" }; // Fork and knife
+      case "Economa 2":
+        return { text: "Zone Economa 2", icon: "fas fa-utensils" }; // Fork and knife
+      case "Fruit et Légume":
+        return { text: "Zone Fruits et Légumes", icon: "fas fa-apple-alt" }; // Apple
+      case "Matériel":
+        return { text: "Zone Matériel", icon: "fas fa-blender" }; // Blender
+      case "Tous":
+        return { text: "Produits Disponibles", icon: "fas fa-boxes" }; // Boxes
+      case "Non assigné":
+        return { text: "Zone Non Assignée", icon: "fas fa-question" }; // Question mark
+      default:
+        return { text: `Zone ${selectedZone}`, icon: "fas fa-utensils" };
+    }
+  };
+
+  const zoneTitle = getZoneTitle();
+
   return (
-    <div className="Cuisinier" style={{ padding: "20px", display: "flex", gap: "20px" }}>
-      <div
-        style={{
-          width: "30%",
-          background: "#f8f9fa",
-          padding: "20px",
-          borderRadius: "10px",
-          boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-        }}
-      >
-        <h2 style={{ textAlign: "center", marginBottom: "20px", color: "#343a40" }}>
-          Utiliser un produit
-        </h2>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <input
-            type="text"
-            placeholder="Rechercher un produit"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            style={{
-              padding: "10px",
-              borderRadius: "5px",
-              border: "1px solid #ddd",
-              width: "100%",
-            }}
-          />
-          <FaSearch style={{ cursor: "pointer", fontSize: "20px" }} />
+    <div className="container">
+      <div className="controls-container">
+        <div className="search-zone-container">
+          <div className="search-container">
+            <FaSearch className="search-icon" />
+            <input
+              type="text"
+              className="search-input"
+              placeholder="Rechercher un produit..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <select
+            className="zone-select"
+            value={selectedZone}
+            onChange={(e) => setSelectedZone(e.target.value)}
+          >
+            {zonesDisponibles.map((zone, index) => (
+              <option key={index} value={zone}>
+                {zone}
+              </option>
+            ))}
+          </select>
         </div>
-        <div style={{ marginTop: "20px" }}>
-          <DatePicker
-            selected={selectedDate}
-            onChange={(date) => setSelectedDate(date)}
-            placeholderText="Sélectionner une date"
-            dateFormat="dd/MM/yyyy"
-            style={{
-              padding: "10px",
-              borderRadius: "5px",
-              border: "1px solid #ddd",
-              width: "100%",
-            }}
-          />
+        <div className="filter-container">
+          {showDatePicker && (
+            <div className="date-picker-container">
+              <DatePicker
+                selected={selectedDate}
+                onChange={(date) => {
+                  setSelectedDate(date);
+                  setShowDatePicker(false);
+                }}
+                placeholderText="Sélectionner une date"
+                dateFormat="dd/MM/yyyy"
+                className="date-picker"
+              />
+            </div>
+          )}
+          <button
+            className="filter-button"
+            onClick={() => setShowDatePicker(!showDatePicker)}
+          >
+            <FaFilter />
+          </button>
         </div>
-        {selectedProduct && (
-          <div style={{ marginTop: "20px" }}>
-            <h3>{selectedProduct.name}</h3>
-            <p>
-              Quantité disponible en Cuisinier:{" "}
-              {(() => {
-                const usedProduct = usedProducts.find(
-                  (used) => used.id === selectedProduct.id
-                );
-                return usedProduct
-                  ? usedProduct.availableQuantity
-                  : selectedProduct.quantity;
-              })()}
-            </p>
+      </div>
+
+      {selectedProduct && (
+        <div className="card">
+          <h3 className="card-title">{selectedProduct.name}</h3>
+          <p className="card-text">
+            Quantité disponible : {(() => {
+              const usedProduct = usedProducts.find((used) => used.id === selectedProduct.id);
+              return usedProduct ? usedProduct.availableQuantity : selectedProduct.quantity;
+            })()} {selectedProduct.unit}
+          </p>
+          <p className="card-text">Zone : {selectedProduct.zone || "Non assigné"}</p>
+          <div className="card-input-container">
             <input
               type="number"
               placeholder="Quantité à utiliser"
               value={quantityToUse}
-              onChange={(e) =>
-                setQuantityToUse(Math.max(0, parseInt(e.target.value) || 0))
-              }
-              style={{
-                padding: "10px",
-                width: "100%",
-                borderRadius: "5px",
-                border: "1px solid #ddd",
-              }}
+              onChange={(e) => setQuantityToUse(Math.max(0, parseInt(e.target.value) || 0))}
+              className="card-input"
             />
             <button
+              className="action-btn card-action-btn"
               onClick={() => handleQuantityDecrease(selectedProduct.id)}
-              style={buttonStyle}
             >
               Utiliser
             </button>
           </div>
-        )}
-      </div>
-      <div style={{ width: "70%" }}>
-        <table
-          style={{
-            width: "100%",
-            borderCollapse: "collapse",
-            fontSize: "14px",
-            boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-          }}
-        >
+        </div>
+      )}
+
+      <div className="zone active">
+        <h2 className="zone-title">
+          <i className={zoneTitle.icon}></i> {zoneTitle.text}
+        </h2>
+        <table className="table">
           <thead>
-            <tr style={{ background: "#343a40", color: "#fff" }}>
-              <th style={tableHeaderStyle}>Nom</th>
-              <th style={tableHeaderStyle}>Quantité disponible</th>
-              <th style={tableHeaderStyle}>Quantité utilisée</th>
-              <th style={tableHeaderStyle}>État</th>
-              <th style={tableHeaderStyle}>Actions</th>
+            <tr>
+              <th>Nom du Produit</th>
+              <th>Zone</th>
+              <th>Quantité Disponible</th>
+              <th>Quantité Utilisée</th>
+              <th>État</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {filteredProducts.map((p) => {
-              const { status, bgColor, textColor } = getStatus(p);
+              const { className, text } = getStatus(p);
               const usedProduct = usedProducts.find((used) => used.id === p.id);
               const usedQuantity = usedProduct ? usedProduct.usedQuantity : 0;
-              const availableQuantity = usedProduct
-                ? usedProduct.availableQuantity
-                : p.quantity;
+              const availableQuantity = usedProduct ? usedProduct.availableQuantity : p.quantity;
 
               return (
-                <tr
-                  key={p.id}
-                  style={{
-                    backgroundColor: bgColor,
-                    transition: "background-color 0.3s ease",
-                  }}
-                >
-                  <td style={tableCellStyle}>{p.name}</td>
-                  <td style={tableCellStyle}>
-                    {availableQuantity} {p.unit}
+                <tr key={p.id}>
+                  <td>{p.name}</td>
+                  <td>{p.zone || "Non assigné"}</td>
+                  <td>{availableQuantity} {p.unit}</td>
+                  <td>{usedQuantity}</td>
+                  <td>
+                    <span className={className}>{text}</span>
                   </td>
-                  <td style={tableCellStyle}>{usedQuantity}</td>
-                  <td style={tableCellStyle}>
-                    <span style={{ color: textColor, fontWeight: "bold" }}>
-                      {status}
-                    </span>
-                  </td>
-                  <td style={tableCellStyle}>
-                    <div
-                      style={{ display: "flex", justifyContent: "center", gap: "10px" }}
+                  <td>
+                    <button
+                      className="action-btn table-action-btn"
+                      onClick={() => setSelectedProduct(p)}
+                      disabled={availableQuantity <= 0}
                     >
-                      <button
-                        onClick={() => setSelectedProduct(p)}
-                        style={{
-                          ...iconButtonStyle,
-                          backgroundColor: availableQuantity <= 0 ? "#ccc" : "#007bff",
-                          cursor: availableQuantity <= 0 ? "not-allowed" : "pointer",
-                        }}
-                        disabled={availableQuantity <= 0}
-                      >
-                        Sélectionner
-                      </button>
-                    </div>
+                      <i className="fas fa-edit"></i> Sélectionner
+                    </button>
                   </td>
                 </tr>
               );
@@ -267,33 +247,5 @@ function Cuisinier({ products }) {
     </div>
   );
 }
-
-const buttonStyle = {
-  width: "100%",
-  padding: "10px",
-  background: "#007bff",
-  color: "#fff",
-  border: "none",
-  borderRadius: "5px",
-  cursor: "pointer",
-};
-const tableHeaderStyle = {
-  padding: "10px",
-  textAlign: "center",
-  borderBottom: "1px solid #ddd",
-};
-const tableCellStyle = {
-  padding: "10px",
-  textAlign: "center",
-  borderBottom: "1px solid #ddd",
-};
-const iconButtonStyle = {
-  padding: "10px",
-  background: "#007bff",
-  color: "#fff",
-  border: "none",
-  borderRadius: "5px",
-  cursor: "pointer",
-};
 
 export default Cuisinier;

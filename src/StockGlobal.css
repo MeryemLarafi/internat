@@ -1,0 +1,328 @@
+/* Define CSS variables for consistency */
+:root {
+  --primary-color: #4a5568;
+  --primary-hover: #2d3748;
+  --view-color: #38a169;
+  --edit-color: #ed8936;
+  --delete-color: #e53e3e;
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --border-radius: 8px;
+  --spacing-sm: 10px;
+  --spacing-md: 20px;
+  --spacing-lg: 30px;
+}
+
+/* General container styling */
+.container {
+  margin-left: 90px;
+  margin-top: 80px;
+  padding: 30px;
+  width: calc(100% - 90px);
+  max-width: 1400px;
+}
+
+/* Controls section (Search and Action buttons) */
+.controls-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+/* Search bar styling */
+.search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+/* Search bar styling */
+.search-icon {
+  position: absolute;
+  top: 50%;
+  left: 15px;
+  transform: translateY(-50%);
+  color: var(--primary-color);
+  z-index: 1;
+}
+
+.search-input {
+  padding: 12px 20px 12px 40px;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--border-radius);
+  width: 100%;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.3s ease;
+  background: white;
+  min-width: 150px;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(74, 85, 104, 0.1);
+}
+
+/* Action buttons (Ajouter) */
+.action-buttons {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.action-btn {
+  padding: 12px 20px;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-weight: 500;
+  background: var(--primary-color);
+  color: white;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+}
+
+.action-btn:hover {
+  background-color: var(--primary-hover);
+}
+
+/* Table container styling */
+.table-container {
+  width: 100%;
+  margin-bottom: var(--spacing-lg);
+  /* Supprime overflow-x: auto */
+}
+
+/* Table styling */
+.table {
+  width: 100%; /* Remplace width: calc(100% + 60px) */
+  margin-left: 0; /* Supprime l'offset négatif */
+  margin-right: 0; /* Supprime l'offset négatif */
+  border-collapse: separate;
+  border-spacing: 0;
+  background: white;
+  border-radius: 10px;
+  box-shadow: var(--shadow-md);
+}
+
+.table th,
+.table td {
+  padding: 16px 20px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  font-size: 14px;
+  color: var(--primary-color);
+  font-family: "Poppins", sans-serif;
+  transition: background-color 0.3s ease;
+  white-space: nowrap; /* Empêche le texte de s'étendre trop */
+  overflow: hidden;
+  text-overflow: ellipsis; /* Ajoute des points (...) si le texte est trop long */
+}
+
+.table th {
+  background-color: var(--primary-color);
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 14px;
+}
+
+.table tbody tr {
+  transition: all 0.3s ease;
+}
+
+.table tbody tr:hover {
+  background-color: #f4f4f4;
+}
+
+.table tbody tr:nth-child(odd) {
+  background-color: #fafafa;
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: #f1f1f1;
+}
+
+/* Action buttons in table */
+.table .action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.table .action-btn {
+  padding: 8px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  box-shadow: none;
+}
+
+.btn-view {
+  background: none; /* Remove background */
+  color: #1E90FF; /* Blue for View icon */
+}
+
+.btn-edit-icon {
+  background: none; /* Remove background */
+  color: #FFFF00; /* Yellow for Edit icon */
+}
+
+.btn-delete-icon {
+  background: none; /* Remove background */
+  color: #FF0000; /* Red for Delete icon */
+}
+
+.btn-view:hover,
+.btn-edit-icon:hover,
+.btn-delete-icon:hover {
+  opacity: 0.8;
+}
+
+/* Status styling */
+.status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.icon {
+  font-size: 16px;
+}
+
+.text {
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.expired-text {
+  color: var(--delete-color);
+}
+
+.warning-text {
+  color: var(--edit-color);
+}
+
+.valid-text {
+  color: var(--view-color);
+}
+
+tr.expired {
+  background-color: #ffeeee;
+}
+
+tr.close-to-expiry {
+  background-color: #fff8e6;
+}
+
+/* Modal styling */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius);
+  width: 400px;
+  box-shadow: var(--shadow-md);
+  position: relative;
+}
+
+.modal-content h2 {
+  margin-bottom: var(--spacing-md);
+  color: var(--primary-color);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+}
+
+.modal-content form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.modal-content form input,
+.modal-content form select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.modal-content form button {
+  margin-top: var(--spacing-md);
+  padding: 10px;
+  border: none;
+  background: var(--primary-color);
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+.modal-content form button:hover {
+  background: var(--primary-hover);
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--delete-color);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+  background: #c53030;
+}
+
+.form-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-md);
+}
+
+.btn-choice {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+  width: 48%;
+}
+
+.btn-choice:hover {
+  background: var(--primary-hover);
+}

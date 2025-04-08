@@ -1,22 +1,29 @@
 import React, { useState } from "react";
 import StockGlobal from "./StockGlobal";
 import Cuisinier from "./Cuisinier";
-import Fournisseur from "./Fournisseur"; // Import Fournisseur page
+import Fournisseur from "./Fournisseur";
 
 function App() {
-  const [products, setProducts] = useState([]); // Shared products state
+  const [products, setProducts] = useState([]);
   const [showStockGlobal, setShowStockGlobal] = useState(true);
   const [showCuisinier, setShowCuisinier] = useState(false);
-  const [showFournisseur, setShowFournisseur] = useState(false); // Add state for Fournisseur page
+  const [showFournisseur, setShowFournisseur] = useState(false);
 
   return (
-    <div className="App" style={{ textAlign: "center", padding: "20px" }}>
+    <div className="App" style={{ minHeight: "100vh", paddingTop: "80px" }}>
+      {/* Top Navigation */}
       <div
         style={{
-          marginBottom: "20px",
+          position: "fixed",
+          top: 0,
+          left: "70px",
+          right: 0,
+          background: "white",
+          padding: "20px",
           display: "flex",
-          justifyContent: "center",
-          gap: "20px",
+          gap: "15px",
+          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+          zIndex: 100,
         }}
       >
         <button
@@ -26,15 +33,12 @@ function App() {
             setShowFournisseur(false);
           }}
           style={{
-            ...buttonStyle,
-            background: showStockGlobal
-              ? "linear-gradient(45deg, #007bff, #0056b3)"
-              : "#f8f9fa",
-            color: showStockGlobal ? "#fff" : "#343a40",
-            border: showStockGlobal ? "none" : "1px solid #ddd",
+            ...navButtonStyle,
+            background: showStockGlobal ? "#4a5568" : "#f1f1f1",
+            color: showStockGlobal ? "white" : "#333",
           }}
         >
-          Page Stock Global
+          Stock Global
         </button>
         <button
           onClick={() => {
@@ -43,52 +47,47 @@ function App() {
             setShowFournisseur(false);
           }}
           style={{
-            ...buttonStyle,
-            background: showCuisinier
-              ? "linear-gradient(45deg, #007bff, #0056b3)"
-              : "#f8f9fa",
-            color: showCuisinier ? "#fff" : "#343a40",
-            border: showCuisinier ? "none" : "1px solid #ddd",
+            ...navButtonStyle,
+            background: showCuisinier ? "#4a5568" : "#f1f1f1",
+            color: showCuisinier ? "white" : "#333",
           }}
         >
-          Page Cuisinier
+          Cuisine
         </button>
         <button
           onClick={() => {
             setShowStockGlobal(false);
             setShowCuisinier(false);
-            setShowFournisseur(true); // Show Fournisseur page
+            setShowFournisseur(true);
           }}
           style={{
-            ...buttonStyle,
-            background: showFournisseur
-              ? "linear-gradient(45deg, #007bff, #0056b3)"
-              : "#f8f9fa",
-            color: showFournisseur ? "#fff" : "#343a40",
-            border: showFournisseur ? "none" : "1px solid #ddd",
+            ...navButtonStyle,
+            background: showFournisseur ? "#4a5568" : "#f1f1f1",
+            color: showFournisseur ? "white" : "#333",
           }}
         >
-          Page Fournisseur
+          Fournisseurs
         </button>
       </div>
 
-      {/* Render the selected page based on the state */}
-      {showStockGlobal && <StockGlobal products={products} setProducts={setProducts} />}
-      {showCuisinier && <Cuisinier products={products} setProducts={setProducts} />}
-      {showFournisseur && <Fournisseur products={products} setProducts={setProducts} />} {/* Render Fournisseur */}
+      {/* Main Content */}
+      <div style={{ padding: "20px" }}>
+        {showStockGlobal && <StockGlobal products={products} setProducts={setProducts} />}
+        {showCuisinier && <Cuisinier products={products} setProducts={setProducts} />}
+        {showFournisseur && <Fournisseur products={products} setProducts={setProducts} />}
+      </div>
     </div>
   );
 }
 
-const buttonStyle = {
-  padding: "10px 20px",
-  fontSize: "16px",
-  fontWeight: "bold",
-  borderRadius: "25px",
+const navButtonStyle = {
+  padding: "12px 24px",
   border: "none",
+  borderRadius: "8px",
   cursor: "pointer",
+  fontWeight: "500",
   transition: "all 0.3s ease",
-  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+  fontFamily: "'Poppins', sans-serif",
 };
 
 export default App;
