@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FaSearch, FaEye, FaEdit, FaTrash, FaPlus, FaFilePdf } from "react-icons/fa";
 import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable"; // Explicitly import autoTable
+import autoTable from "jspdf-autotable";
 import "./StockGlobal.css";
 
 function StockGlobal({ products, setProducts }) {
@@ -12,16 +12,26 @@ function StockGlobal({ products, setProducts }) {
     date: "",
     expirationDate: "",
     unit: "",
-    supplier: "Non assigné",
+    supplier: "",
     zone: "",
   });
-
   const [showExpirationInput, setShowExpirationInput] = useState(false);
+  const [showForm, setShowForm] = useState(false);
   const [searchOption, setSearchOption] = useState("product");
   const [searchTerm, setSearchTerm] = useState("");
   const [searchDate, setSearchDate] = useState("");
   const [searchSupplier, setSearchSupplier] = useState("");
-  const [showForm, setShowForm] = useState(false);
+
+  // Jib l-fournisseurs mn localStorage
+  const availableSuppliers = (() => {
+    try {
+      const savedSuppliers = localStorage.getItem("suppliers");
+      return savedSuppliers ? JSON.parse(savedSuppliers).map((s) => s.name) : [];
+    } catch (error) {
+      console.error("Error reading suppliers from localStorage:", error);
+      return [];
+    }
+  })();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -36,20 +46,37 @@ function StockGlobal({ products, setProducts }) {
       product.price &&
       product.quantity &&
       product.date &&
-      product.unit
+      product.unit &&
+      product.supplier
     ) {
-      const totalPrice =
-        parseFloat(product.price) * parseInt(product.quantity);
-      setProducts([
-        ...products,
-        {
-          ...product,
-          totalPrice,
-          id: Date.now(),
-          entryDate: product.date,
-          supplier: "Non assigné",
-        },
-      ]);
+      const totalPrice = parseFloat(product.price) * parseInt(product.quantity);
+      const newProduct = {
+        ...product,
+        totalPrice,
+        id: Date.now(),
+        entryDate: product.date,
+      };
+      setProducts([...products, newProduct]);
+
+      // Update localStorage suppliers to include this product
+      try {
+        const savedSuppliers = localStorage.getItem("suppliers");
+        if (savedSuppliers) {
+          const suppliers = JSON.parse(savedSuppliers);
+          const updatedSuppliers = suppliers.map((s) =>
+            s.name === product.supplier
+              ? {
+                  ...s,
+                  assignedProducts: [...(s.assignedProducts || []), newProduct.id],
+                }
+              : s
+          );
+          localStorage.setItem("suppliers", JSON.stringify(updatedSuppliers));
+        }
+      } catch (error) {
+        console.error("Error updating suppliers in localStorage:", error);
+      }
+
       setProduct({
         name: "",
         price: "",
@@ -57,13 +84,13 @@ function StockGlobal({ products, setProducts }) {
         date: "",
         expirationDate: "",
         unit: "",
-        supplier: "Non assigné",
+        supplier: "",
         zone: "",
       });
       setShowExpirationInput(false);
       setShowForm(false);
     } else {
-      alert("Veuillez remplir tous les champs.");
+      alert("Veuillez remplir tous les champs, y compris le fournisseur.");
     }
   };
 
@@ -122,17 +149,12 @@ function StockGlobal({ products, setProducts }) {
 
   const exportToPDF = () => {
     const doc = new jsPDF();
-
-    // Add title
     doc.setFontSize(18);
     doc.text("Stock Global - Rapport", 14, 20);
-
-    // Add current date
     doc.setFontSize(12);
     const currentDate = new Date().toLocaleDateString();
     doc.text(`Date: ${currentDate}`, 14, 30);
 
-    // Prepare table data
     const tableData = filteredProducts.map((p) => [
       p.name || "N/A",
       `${p.quantity} ${p.unit}` || "N/A",
@@ -148,7 +170,6 @@ function StockGlobal({ products, setProducts }) {
         : "Valide",
     ]);
 
-    // Use autoTable directly
     autoTable(doc, {
       startY: 40,
       head: [
@@ -169,7 +190,6 @@ function StockGlobal({ products, setProducts }) {
       styles: { fontSize: 10, cellPadding: 3 },
     });
 
-    // Save the PDF
     doc.save("stock_global_rapport.pdf");
   };
 
@@ -204,7 +224,6 @@ function StockGlobal({ products, setProducts }) {
                 value={product.quantity}
                 onChange={handleChange}
               />
-
               <select name="unit" value={product.unit} onChange={handleChange}>
                 <option value="">Sélectionner l'unité</option>
                 <option value="kg">kg</option>
@@ -212,7 +231,18 @@ function StockGlobal({ products, setProducts }) {
                 <option value="L">L</option>
                 <option value="piece">Pièce</option>
               </select>
-
+              <select name="supplier" value={product.supplier} onChange={handleChange}>
+                <option value="">Sélectionner un fournisseur</option>
+                {availableSuppliers.length > 0 ? (
+                  availableSuppliers.map((supplierName, index) => (
+                    <option key={index} value={supplierName}>
+                      {supplierName}
+                    </option>
+                  ))
+                ) : (
+                  <option disabled>Aucun fournisseur disponible</option>
+                )}
+              </select>
               <select name="zone" value={product.zone} onChange={handleChange}>
                 <option value="">Choisir une zone</option>
                 <option value="Economa 1">Economa 1</option>
@@ -220,7 +250,6 @@ function StockGlobal({ products, setProducts }) {
                 <option value="Matériel">Matériel</option>
                 <option value="Fruit et Légume">Fruit et Légume</option>
               </select>
-
               <button
                 type="button"
                 onClick={() => setShowExpirationInput(!showExpirationInput)}
@@ -230,7 +259,6 @@ function StockGlobal({ products, setProducts }) {
                   ? "Retirer la date d'expiration"
                   : "Ajouter date d'expiration"}
               </button>
-
               {showExpirationInput && (
                 <input
                   type="date"
@@ -239,7 +267,6 @@ function StockGlobal({ products, setProducts }) {
                   onChange={handleChange}
                 />
               )}
-
               <input
                 type="date"
                 name="date"
